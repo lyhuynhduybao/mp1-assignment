@@ -225,7 +225,9 @@ bool MP1Node::recvCallBack(void *env, char *data, int size ) {
 	 * Your code goes here
 	 */
 }
-
+bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
+       
+}
 /**
  * FUNCTION NAME: nodeLoopOps
  *
@@ -265,7 +267,6 @@ void MP1Node::nodeLoopOps() {
 
     return;
 }
-
 /**
  * FUNCTION NAME: isNullAddress
  *
