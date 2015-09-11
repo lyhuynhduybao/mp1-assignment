@@ -158,22 +158,15 @@ int MP1Node::introduceSelfToGroup(Address *joinaddr) {
  *
  * DESCRIPTION: Wind up this node and clean up state
  */
-int MP1Node::finishUpThisNode(Address *cleanaddr){
+int MP1Node::finishUpThisNode(){
    /*
     * Your code goes here
     */
-    int id = *(int*)(&memberNode->addr.addr);
-    int port = *(short*)(&memberNode->addr.addr[4]);
-
+#ifdef DEBUGLOG
+     log->LOG(&memberNode->addr, "Cleaning this node...");
+#endif
     memberNode->bFailed = true;
-    memberNode->inGroup = true;
-    // node is down!
-    memberNode->nnb = 0;
-    memberNode->heartbeat = 0;
-    memberNode->pingCounter = TFAIL;
-    memberNode->timeOutCounter = 5;
-    initMemberListTable(memberNode);
-
+    memberNode->inGroup = false;
     return 0;
 
 }
@@ -245,6 +238,7 @@ void MP1Node::nodeLoopOps() {
 	/*
 	 * Your code goes here
 	 */
+     int timeOut = TFAIL;
 
     return;
 }
