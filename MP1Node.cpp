@@ -226,7 +226,28 @@ bool MP1Node::recvCallBack(void *env, char *data, int size ) {
 	 */
 }
 bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
-       
+        vector<MemberListEntry>::iterator i;
+        for (it = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++) {
+                if ((AddressFromMLE(&(*i)) == *addr) == 0) {
+                        if (heartbeat > i->getheartbeat()) {
+                                i->setheartbeat(heartbeat);
+                                i->settimestamp(par->getcurrtime());
+                                return true;
+                        } else {
+                                return false;
+                        }
+                }
+        }
+        MemberListEntry mle(*((int*)addr->addr),
+                            *((short*)&(addr->addr[4])),
+                            heartbeat,
+                            par->getcurrtime());
+        memberNode->memberList.push_back(mle);
+        log->logNodeAdd(&memberNode->addr, addr);
+        return true;
+}   
+void MP1Node::SendHBSomewhere(Address *src_addr, long heartbeat) {
+   
 }
 /**
  * FUNCTION NAME: nodeLoopOps
@@ -262,8 +283,8 @@ void MP1Node::nodeLoopOps() {
             log->logNodeRemove(&memberNode->addr, &addr);
         }
      }
-     UpdateMemberList(&memberNode->addr , ++memberNode->heartbeat);
-     SendHBSomewhere(&memberNode->addr , memberNode->heartbeat);
+    UpdateMemberList(&memberNode->addr , ++memberNode->heartbeat);
+    SendHBSomewhere(&memberNode->addr , memberNode->heartbeat);
 
     return;
 }
