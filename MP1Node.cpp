@@ -6,7 +6,7 @@
  **********************************/
 
 #include "MP1Node.h"
-
+#include <sstream>
 /*
  * Note: You can change/add any functions in MP1Node.{h,cpp}
  */
@@ -239,6 +239,29 @@ void MP1Node::nodeLoopOps() {
 	 * Your code goes here
 	 */
      int timeOut = TFAIL;
+     stringstream sstring; //Tranfer string between nodes
+     for(vector<MemberListEntry>::iterator i = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++)
+     {
+        if(par->getcurrtime() - i->timestamp > timeOut)
+        {
+            Address addr = AddressFromMLE(&(*i));
+            sstring << "Timming out " << addr.getAddress();
+            log->LOG(&memberNode->addr, sstring.str().c_str());
+            sstring.str("");
+            vertor<MemberListEntry>::iterator next_i = i;
+            vertor<MemberListEntry>::iterator next_next_i = i+1;
+            for (next_i = i ; next_next_i != memberNode->memberList.end() ; next_i++, next_next_i++ )
+            {
+                *next_i = *next_next_i;
+            }
+            memberNode->memberList.resize(memberNode->memberList.size()-1);
+            i -= 1;
+            LogMemberList();
+            log->logNodeRemove(&memberNode->addr, &addr);
+        }
+     }
+     UpdateMemberList(&memberNode->addr , ++memberNode->heartbeat);
+     SendHBSomewhere(&memberNode->addr , memberNode->heartbeat);
 
     return;
 }
