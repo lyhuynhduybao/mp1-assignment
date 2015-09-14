@@ -225,6 +225,10 @@ bool MP1Node::recvCallBack(void *env, char *data, int size ) {
 	 * Your code goes here
 	 */
 }
+/*
+    Update MemberList when a new member ask to join
+*/
+
 bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
         vector<MemberListEntry>::iterator i;
         for (it = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++) {
@@ -246,7 +250,9 @@ bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
         log->logNodeAdd(&memberNode->addr, addr);
         return true;
 } 
-  
+/*
+    Send the heartbeat to the members in List
+*/
 void MP1Node::SendHBSomewhere(Address *src_addr, long heartbeat) {
    int k = 30;
     double prob = k / (double)memberNode->memberList.size();
