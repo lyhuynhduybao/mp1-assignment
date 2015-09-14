@@ -245,9 +245,39 @@ bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
         memberNode->memberList.push_back(mle);
         log->logNodeAdd(&memberNode->addr, addr);
         return true;
-}   
+} 
+  
 void MP1Node::SendHBSomewhere(Address *src_addr, long heartbeat) {
-   
+   int k = 30;
+    double prob = k / (double)memberNode->memberList.size();
+
+    MessageHdr *msg;
+    
+    size_t msgsize = sizeof(MessageHdr) + sizeof(src_addr->addr) + sizeof(long) + 1;
+    msg = (MessageHdr *) malloc(msgsize * sizeof(char));
+    
+    // create JOINREQ message: format of data is {struct Address myaddr}
+    msg->msgType = PING;
+    memcpy((char *)(msg+1), src_addr->addr, sizeof(src_addr->addr));
+    memcpy((char *)(msg+1) + sizeof(src_addr->addr) + 1, &heartbeat, sizeof(long));
+    
+    for (vector<MemberListEntry>::iterator i = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++) {
+            Address dst_addr = AddressFromMLE(&(*it));
+            if ((dst_addr == memberNode->addr) == 0 ||
+                ((dst_addr == *src_addr) == 0)) {
+                    continue;
+            }
+            if ((((double)(rand() % 100))/100) < prob) {
+
+                //stringstream ss;
+                //ss<< "Relaying hb about " << src_addr->getAddress() << " to " << dst_addr.getAddress();
+                //log->LOG(&memberNode->addr, ss.str().c_str());
+                emulNet->ENsend(&memberNode->addr, &dst_addr, (char *)msg, msgsize);
+            } else {
+                //log->LOG(&memberNode->addr, "Not relaying hb");
+            }
+    }
+    free(msg);
 }
 /**
  * FUNCTION NAME: nodeLoopOps
