@@ -24,6 +24,7 @@ MP1Node::MP1Node(Member *member, Params *params, EmulNet *emul, Log *log, Addres
 	this->emulNet = emul;
 	this->log = log;
 	this->par = params;
+
 	this->memberNode->addr = *address;
 }
 
@@ -250,6 +251,12 @@ bool MP1Node::UpdateMemberList(Address *addr, long heartbeat)  {
         log->logNodeAdd(&memberNode->addr, addr);
         return true;
 } 
+Address AddressFromMLE(MemberListEntry* mle) {
+        Address a;
+        memcpy(a.addr, &mle->id, sizeof(int));
+        memcpy(&a.addr[4], &mle->port, sizeof(short));
+        return a;
+}
 /*
     Send the heartbeat to the members in List
 */
@@ -268,7 +275,7 @@ void MP1Node::SendHBSomewhere(Address *src_addr, long heartbeat) {
     memcpy((char *)(msg+1) + sizeof(src_addr->addr) + 1, &heartbeat, sizeof(long));
     
     for (vector<MemberListEntry>::iterator i = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++) {
-            Address dst_addr = AddressFromMLE(&(*it));
+            Address dst_addr = AddressFromMLE(&(*i));
             if ((dst_addr == memberNode->addr) == 0 ||
                 ((dst_addr == *src_addr) == 0)) {
                     continue;
@@ -323,6 +330,15 @@ void MP1Node::nodeLoopOps() {
     SendHBSomewhere(&memberNode->addr , memberNode->heartbeat);
 
     return;
+}
+void MP1Node::LogMemberList() {
+    stringstream msg;
+    msg << "[";
+    for (vector<MemberListEntry>::iterator i = memberNode->memberList.begin(); i != memberNode->memberList.end(); i++) {
+        msg << i->getid() << ": " << i->getheartbeat() << "(" << i->gettimestamp() << "), ";
+    }
+    msg << "]";
+    log->LOG(&memberNode->addr, msg.str().c_str());
 }
 /**
  * FUNCTION NAME: isNullAddress
