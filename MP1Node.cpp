@@ -369,8 +369,12 @@ Address MP1Node::getJoinAddress() {
  *
  * DESCRIPTION: Initialize the membership list
  */
-void MP1Node::initMemberListTable(Member *memberNode) {
+void MP1Node::initMemberListTable(Member *memberNode, int id, short port) {
 	memberNode->memberList.clear();
+    MemberListEntry mle = MemberListEntry(id, port);
+    mle.settimestamp(par->getcurrtime());
+    mle.setheartbeat(memberNode->heartbeat);
+    memberNode->memberList.push_back(mle);
 }
 
 /**

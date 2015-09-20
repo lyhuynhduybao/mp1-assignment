@@ -31,6 +31,7 @@
 enum MsgTypes{
     JOINREQ,
     JOINREP,
+    PING,
     DUMMYLASTMSGTYPE
 };
 
@@ -55,6 +56,8 @@ private:
 	Params *par;
 	Member *memberNode;
 	char NULLADDR[6];
+	void onHeartbeat(Address*, void*, size_t);
+	void onJoin(Address*, void*, size_t);
 
 public:
 	MP1Node(Member *, Params *, EmulNet *, Log *, Address *);
@@ -62,6 +65,7 @@ public:
 		return memberNode;
 	}
 	int recvLoop();
+	AddressFromMLE(MemberListEntry* mle)
 	static int enqueueWrapper(void *env, char *buff, int size);
 	void nodeStart(char *servaddrstr, short serverport);
 	int initThisNode(Address *joinaddr);
@@ -72,8 +76,11 @@ public:
 	bool recvCallBack(void *env, char *data, int size);
 	void nodeLoopOps();
 	int isNullAddress(Address *addr);
+	void LogMemberList();
+	void UpdateMemberList(Address *addr, long heartbeat);
+	void SendHBSomewhere(Address *src_addr, long heartbeat);
 	Address getJoinAddress();
-	void initMemberListTable(Member *memberNode);
+	void initMemberListTable(Member *memberNode, int id, short port);
 	void printAddress(Address *addr);
 	virtual ~MP1Node();
 };
