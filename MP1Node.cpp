@@ -167,8 +167,10 @@ int MP1Node::finishUpThisNode(){
         /*
          * Your code goes here
          */
+         static char s[1024];
 #ifdef DEBUGLOG
-         log->LOG(memberNode->addr, s);
+         sprintf(s,"This node is finished");
+         log->LOG(&memberNode->addr,s);
 #endif
          return 0;
 }
