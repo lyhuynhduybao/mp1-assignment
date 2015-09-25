@@ -168,7 +168,6 @@ int MP1Node::finishUpThisNode(){
          * Your code goes here
          */
 #ifdef DEBUGLOG
-         sprintf(s,"Deleting this node...");
          log->LOG(memberNode->addr, s);
 #endif
          return 0;
